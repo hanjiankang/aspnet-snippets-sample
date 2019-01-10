@@ -44,19 +44,37 @@ namespace Microsoft_Graph_ASPNET_Snippets.Models
             List<ResultsItem> items = new List<ResultsItem>();
 
             // Get unified groups.
+            //IGraphServiceGroupsCollectionPage groups = await graphClient.Groups.Request().Filter("groupTypes/any(a:a%20eq%20'unified')").GetAsync();
+
+            //if (groups?.Count > 0)
+            //{
+            //    foreach (Group group in groups)
+            //    {
+            //        items.Add(new ResultsItem
+            //        {
+            //            Display = group.DisplayName,
+            //            Id = group.Id
+            //        });
+            //    }
+            //}
+
             IGraphServiceGroupsCollectionPage groups = await graphClient.Groups.Request().Filter("groupTypes/any(a:a%20eq%20'unified')").GetAsync();
 
-            if (groups?.Count > 0)
+            do
             {
-                foreach (Group group in groups)
+                foreach (var group in groups)
                 {
                     items.Add(new ResultsItem
                     {
                         Display = group.DisplayName,
                         Id = group.Id
                     });
+
                 }
             }
+            while (groups.NextPageRequest != null && (groups = await groups.NextPageRequest.GetAsync()).Count > 0);
+
+
             return items;
         }
 
